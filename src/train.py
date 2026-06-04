@@ -1,5 +1,3 @@
-# src/train.py
-
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -43,9 +41,6 @@ def train_models(X_train, y_train):
     """
     models = {}
 
-    # =========================
-    # Logistic Regression (BEST MODEL)
-    # =========================
     lr_pipeline = Pipeline([
         ('scaler', StandardScaler()),
         ('model', LogisticRegression(
@@ -57,9 +52,6 @@ def train_models(X_train, y_train):
     lr_pipeline.fit(X_train, y_train)
     models['Logistic Regression'] = lr_pipeline
 
-    # =========================
-    # Random Forest
-    # =========================
     rf = RandomForestClassifier(
         n_estimators=100,
         random_state=42,
@@ -68,10 +60,6 @@ def train_models(X_train, y_train):
     rf.fit(X_train, y_train)
     models['Random Forest'] = rf
 
-    # =========================
-    # XGBoost
-    # =========================
-    # Compute imbalance ratio
     scale_pos_weight = (y_train == 0).sum() / (y_train == 1).sum()
 
     xgb = XGBClassifier(
