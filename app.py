@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,17 +10,11 @@ from src.feature_engineering import create_rolling_features, drop_na_rows
 from src.train import train_test_split_by_engine, prepare_features, train_models
 from src.evaluate import classify_risk
 
-# =========================
-# PAGE CONFIG
-# =========================
 st.set_page_config(page_title="Predictive Maintenance System", layout="wide")
 
 st.title("🔧 Explainable Predictive Maintenance System")
 st.markdown("Predict engine failure risk using sensor data with explainability")
 
-# =========================
-# LOAD + PREPROCESS DATA
-# =========================
 @st.cache_data
 def load_data():
     df = load_cmapss_data("data/train_FD001.txt")
@@ -34,9 +26,6 @@ def load_data():
 
 df = load_data()
 
-# =========================
-# TRAIN MODEL (CACHED)
-# =========================
 @st.cache_resource
 def train_model(df):
     train_df, _ = train_test_split_by_engine(df)
@@ -46,9 +35,6 @@ def train_model(df):
 
 model, X_train = train_model(df)
 
-# =========================
-# SIDEBAR CONTROLS
-# =========================
 st.sidebar.header("Controls")
 
 engine_ids = sorted(df['engine_id'].unique())
@@ -67,21 +53,14 @@ selected_cycle = st.sidebar.slider(
 
 selected_row = engine_data[engine_data['cycle'] == selected_cycle]
 
-# =========================
-# ENGINE OVERVIEW
-# =========================
 st.subheader(f"Engine {selected_engine} Overview")
 colA, colB = st.columns(2)
 
 colA.write(f"Total Cycles: {cycle_max}")
 colB.write(f"Selected Cycle: {selected_cycle}")
 
-# =========================
-# SENSOR VISUALIZATION
-# =========================
 st.subheader("📈 Sensor Trend")
 
-# Faster + cleaner filtering
 sensor_cols = [col for col in df.columns if 'sensor_' in col and '_mean' not in col]
 valid_sensors = [col for col in sensor_cols if df[col].std() > 0.01]
 
@@ -97,17 +76,11 @@ ax.legend()
 
 st.pyplot(fig)
 
-# =========================
-# PREDICTION
-# =========================
 X_latest, _ = prepare_features(selected_row)
 
 prob = model.predict_proba(X_latest)[0][1]
 risk = classify_risk(prob)
 
-# =========================
-# DISPLAY RESULTS
-# =========================
 st.subheader("📊 Prediction Result")
 
 col1, col2, col3 = st.columns(3)
@@ -122,12 +95,8 @@ elif risk == "Medium Risk":
 else:
     col3.success("✅ Healthy")
 
-# Progress bar
 st.progress(float(prob))
 
-# =========================
-# SHAP EXPLANATION
-# =========================
 st.subheader("🔍 Key Feature Contributions")
 
 scaler = model.named_steps['scaler']
@@ -157,9 +126,5 @@ ax.set_title("Top Feature Contributions")
 ax.invert_yaxis()
 
 st.pyplot(fig)
-
-# =========================
-# RAW DATA
-# =========================
 with st.expander("View Engine Data"):
     st.dataframe(engine_data.tail(20))
