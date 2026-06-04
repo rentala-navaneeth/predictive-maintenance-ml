@@ -15,7 +15,6 @@ def load_cmapss_data(file_path: str) -> pd.DataFrame:
         header=None
     )
 
-    # Drop last two empty columns
     df = df.iloc[:, :26]
     df.columns = cols
 
