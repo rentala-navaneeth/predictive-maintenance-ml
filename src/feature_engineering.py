@@ -1,5 +1,3 @@
-# src/feature_engineering.py
-
 import pandas as pd
 import numpy as np
 
@@ -11,7 +9,6 @@ def compute_slope(series: np.ndarray) -> float:
     x = np.arange(len(series))
     y = series
 
-    # Avoid issues with constant values
     if len(set(y)) == 1:
         return 0.0
 
@@ -41,7 +38,6 @@ def create_rolling_features(df: pd.DataFrame, window: int = 10) -> pd.DataFrame:
 
         feature_dfs.append(temp)
 
-    # Concatenate all features at once
     features = pd.concat(feature_dfs, axis=1)
 
     df = pd.concat([df, features], axis=1)
